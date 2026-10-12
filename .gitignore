@@ -1,0 +1,9 @@
+target/
+uploads/*
+!uploads/.gitkeep
+.env
+.env.*
+!.env.example
+*.log
+.idea/
+.vscode/
