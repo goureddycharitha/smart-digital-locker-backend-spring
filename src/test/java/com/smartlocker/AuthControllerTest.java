@@ -94,4 +94,25 @@ public class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void registerAndLogin_usingAuthAliasWithoutApiPrefix_shouldSucceed() throws Exception {
+        // Test /auth/register alias without JWT
+        RegisterRequest register = new RegisterRequest("Alias User", "alias@example.com", "Password@123");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(register)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.user.email").value("alias@example.com"));
+
+        // Test /auth/login alias without JWT
+        LoginRequest login = new LoginRequest("alias@example.com", "Password@123");
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.user.email").value("alias@example.com"));
+    }
 }
